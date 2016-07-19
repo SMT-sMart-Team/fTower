@@ -18,11 +18,12 @@ buildscript {
     repositories {
         jcenter()
         mavenCentral()
-        maven { url 'https://maven.fabric.io/public' }
+        maven { url 'https://twittersdk.artifactoryonline.com/twittersdk/public' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.5.0'
+        classpath 'com.android.tools.build:gradle:2.1.2'
         classpath 'io.fabric.tools:gradle:1.21.2'
+//        classpath files('gradle-1.21.2.jar')
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -67,7 +68,7 @@ allprojects {
             }
         }
 
-        maven { url 'https://maven.fabric.io/public' }
+        maven { url 'https://twittersdk.artifactoryonline.com/twittersdk/public' }
 
         flatDir {
             dirs 'libs'
