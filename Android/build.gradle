@@ -51,7 +51,7 @@ def versionPrefix = "Tower-v"
 //Decomposed version name and code (https://plus.google.com/+JakeWharton/posts/6f5TcVPRZij)
 def versionMajor = 3
 def versionMinor = 2
-def versionPatch = 1
+def versionPatch = 2
 def versionBuild = 8 //bump for dogfood builds, public betas, etc.
 
 //Logging levels
@@ -67,7 +67,7 @@ android {
     buildToolsVersion android_build_tools_version
 
     defaultConfig {
-        applicationId 'org.droidplanner.android'
+        applicationId 'com.offbye.droidplanner.android'
         minSdkVersion android_build_min_sdk_version
         targetSdkVersion android_build_target_sdk_version
         versionCode computeVersionCode(versionMajor, versionMinor, versionPatch, versionBuild)
@@ -123,7 +123,7 @@ android {
             storeFile file("debug.keystore")
         }
         release {
-            storeFile file("~/offbye.jks")
+            storeFile file("/Users/zhangxitao/offbye.jks")
             storePassword "tiger369"
             keyAlias "offbye"
             keyPassword "tiger369"
