@@ -9,6 +9,11 @@
 Tower is a Ground Control Station (GCS) Android app built atop [3DR Services](https://github.com/dronekit/dronekit-android), for UAVs
 running Ardupilot software.
 
+# Tower中国版本
+官方的代码在国内不适应，国内多数手机没有谷歌服务，没有3DR services等，因此为了我自己玩的开心，Fork这个项目改一下，希望能造福魔友。
+    1. 修改gradle，解决GFW导致一些repo下载慢无法编译的问题
+    2. 修改谷歌地图key，debug版本可用
+
 [![Google Play Store](https://developer.android.com/images/brand/en_app_rgb_wo_45.png)](https://play.google.com/store/apps/details?id=org.droidplanner.android)
 
 ### Usage Guide
