@@ -123,10 +123,10 @@ android {
             storeFile file("debug.keystore")
         }
         release {
-            storeFile file("qianmi_key.jks")
-            storePassword "qianmi"
-            keyAlias "qianmi"
-            keyPassword "qianmi"
+            storeFile file("~/offbye.jks")
+            storePassword "tiger369"
+            keyAlias "offbye"
+            keyPassword "tiger369"
         }
     }
 
