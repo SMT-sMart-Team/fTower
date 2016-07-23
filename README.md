@@ -10,7 +10,8 @@ Tower is a Ground Control Station (GCS) Android app built atop [3DR Services](ht
 running Ardupilot software.
 
 # Tower中国版本
-官方的代码在国内不适应，国内多数手机没有谷歌服务，没有3DR services等，因此为了我自己玩的开心，Fork这个项目改一下，希望能造福魔友。
+官方的代码在国内不适用，国内多数手机没有谷歌服务，没有3DR services等，因此为了我自己玩的开心，Fork这个项目改一下，逐步改的让国内主流安卓手机能用，希望后面能造福魔友。
+
     1. 修改gradle，解决GFW导致一些repo下载慢无法编译的问题
     2. 修改谷歌地图key，debug版本可用
 
