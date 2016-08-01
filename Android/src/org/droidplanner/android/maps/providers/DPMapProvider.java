@@ -1,6 +1,7 @@
 package org.droidplanner.android.maps.providers;
 
 import org.droidplanner.android.maps.DPMap;
+import org.droidplanner.android.maps.providers.google_map.AMapPrefFragment;
 import org.droidplanner.android.maps.providers.google_map.GoogleMapFragment;
 import org.droidplanner.android.maps.providers.google_map.GoogleMapPrefFragment;
 
@@ -31,7 +32,7 @@ public enum DPMapProvider {
 
 		@Override
 		public MapProviderPreferences getMapProviderPreferences() {
-			return new GoogleMapPrefFragment();
+			return new AMapPrefFragment();
 		}
 	};
 
