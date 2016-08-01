@@ -81,7 +81,8 @@ android {
 
         //Manifest placeholders (http://tools.android.com/tech-docs/new-build-system/user-guide/manifest-merger#TOC-Placeholder-support)
         manifestPlaceholders = [
-            fabricApiKey:getFabricApiKey()
+            fabricApiKey:getFabricApiKey(),
+            amapApiKey:'f6fa2b2db544de390187e50dd46fe394'
         ]
 
         // Enabling multidex support.

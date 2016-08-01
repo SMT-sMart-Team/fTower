@@ -23,4 +23,12 @@ public class DroneHelper {
 		final float scale = res.getDisplayMetrics().density;
 		return (int) Math.round(value * scale);
 	}
+
+	public static LatLong LatLngToCoord(com.amap.api.maps.model.LatLng point) {
+		return new LatLong((float)point.latitude, (float) point.longitude);
+	}
+
+	static public com.amap.api.maps.model.LatLng CoordToAMapLatLang(LatLong coord) {
+		return new com.amap.api.maps.model.LatLng(coord.getLatitude(), coord.getLongitude());
+	}
 }
