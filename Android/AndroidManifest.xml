@@ -153,6 +153,12 @@
 
         <service android:name=".AppService" />
 
+        <activity
+            android:name="com.o3dr.android.client.utils.InstallServiceDialog"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
     </application>
 
 </manifest>

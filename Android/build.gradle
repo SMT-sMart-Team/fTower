@@ -21,7 +21,7 @@ dependencies {
     compile 'com.github.gabrielemariotti.changeloglib:changelog:2.0.0'
 
     //DroneKit-Android client library.
-    compile 'com.o3dr.android:dronekit-android:2.9.0'
+//    compile 'com.o3dr.android:dronekit-android:2.9.0'
 
     compile 'me.grantland:autofittextview:0.2.1'
     compile(name:'shimmer-android-release', ext:'aar')
@@ -32,6 +32,7 @@ dependencies {
     compile files('libs/protobuf-java-2.5.0.jar')
     compile files('libs/jeromq-0.3.4.jar')
     compile files('libs/sius-0.3.0-SNAPSHOT.jar')
+    compile files('libs/Mavlink.jar')
 
     compile "com.squareup.okhttp:okhttp:${okhttp_version}"
     compile "com.squareup.okhttp:okhttp-urlconnection:${okhttp_version}"
