@@ -22,6 +22,17 @@ public enum DPMapProvider {
 		public MapProviderPreferences getMapProviderPreferences() {
 			return new GoogleMapPrefFragment();
 		}
+	},
+	AMAP {
+		@Override
+		public DPMap getMapFragment() {
+			return new GoogleMapFragment();
+		}
+
+		@Override
+		public MapProviderPreferences getMapProviderPreferences() {
+			return new GoogleMapPrefFragment();
+		}
 	};
 
 	/**
