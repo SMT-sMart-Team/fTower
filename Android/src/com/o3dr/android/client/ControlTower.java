@@ -34,7 +34,7 @@ public class ControlTower {
         }
     };
 
-    private final ServiceConnection o3drServicesConnection = new ServiceConnection() {
+/*    private final ServiceConnection o3drServicesConnection = new ServiceConnection() {
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -54,7 +54,7 @@ public class ControlTower {
             isServiceConnecting.set(false);
             notifyTowerDisconnected();
         }
-    };
+    }; */
 
     private final AtomicBoolean isServiceConnecting = new AtomicBoolean(false);
 
@@ -71,7 +71,8 @@ public class ControlTower {
     }
 
     public boolean isTowerConnected() {
-        return o3drServices != null && o3drServices.asBinder().pingBinder();
+//        return o3drServices != null && o3drServices.asBinder().pingBinder();
+        return true;
     }
 
     void notifyTowerConnected() {
@@ -124,7 +125,7 @@ public class ControlTower {
     }
 
     public void connect(TowerListener listener) {
-        if (towerListener != null && (isServiceConnecting.get() || isTowerConnected()))
+/*        if (towerListener != null && (isServiceConnecting.get() || isTowerConnected()))
             return;
 
         if (listener == null) {
@@ -150,7 +151,7 @@ public class ControlTower {
                     ApiAvailability.getInstance().showErrorDialog(context, apiAvailableResult);
                     break;
             }
-        }
+        } */
     }
 
     public void disconnect() {
@@ -163,11 +164,11 @@ public class ControlTower {
 
         towerListener = null;
 
-        try {
-            context.unbindService(o3drServicesConnection);
-        } catch (Exception e) {
-            Log.e(TAG, "Error occurred while unbinding from 3DR Services.");
-        }
+//        try {
+//            context.unbindService(o3drServicesConnection);
+//        } catch (Exception e) {
+//            Log.e(TAG, "Error occurred while unbinding from 3DR Services.");
+//        }
     }
 
     String getApplicationId() {
