@@ -58,6 +58,18 @@
         </PreferenceCategory>
 
         <PreferenceCategory
+            android:key="pref_amap_tile_provider_settings"
+            android:title="@string/pref_title_google_tile_provider">
+            <ListPreference
+                android:defaultValue="satellite"
+                android:entries="@array/MapTypes"
+                android:entryValues="@array/MapTypeValues"
+                android:key="pref_map_type"
+                android:summary="@string/pref_map_type_summary"
+                android:title="@string/pref_map_type"/>
+        </PreferenceCategory>
+
+        <PreferenceCategory
             android:key="pref_mapbox_tile_provider_settings"
             android:title="@string/pref_title_mapbox_tile_provider">
 

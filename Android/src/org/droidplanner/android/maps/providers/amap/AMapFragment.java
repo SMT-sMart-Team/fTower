@@ -637,7 +637,7 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
 //                }
 //            });
                 final float zoomLevel = mMap.getCameraPosition().zoom;
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(DroneHelper.CoordToLatLang(coord),
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(DroneHelper.CoordToAMapLatLang(coord),
                         zoomLevel));
         }
     }
