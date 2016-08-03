@@ -1,8 +1,6 @@
 
 # cTower: Tower for Chinese cellphones.
 
-[![Join the chat at https://gitter.im/DroidPlanner/Tower](https://badges.gitter.im/DroidPlanner/Tower.svg)](https://gitter.im/DroidPlanner/Tower?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 Tower is a Ground Control Station (GCS) Android app built atop [3DR Services](https://github.com/dronekit/dronekit-android), for UAVs
 running Ardupilot software.
 
@@ -24,6 +22,7 @@ running Ardupilot software.
  6. 增强简体中文翻译
 
  ### [下载cTower3.2.2版本](http://o79096vir.bkt.clouddn.com/ctower/cTower-v3.2.2-release.apk)
+![ctower](http://o79096vir.bkt.clouddn.com/ctower/S60803-20125595.jpg)
 
 下载Tower官方版本 [![Google Play Store](https://developer.android.com/images/brand/en_app_rgb_wo_45.png)](https://play.google.com/store/apps/details?id=org.droidplanner.android)
 
