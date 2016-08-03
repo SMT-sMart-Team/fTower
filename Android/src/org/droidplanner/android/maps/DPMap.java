@@ -37,16 +37,16 @@ public interface DPMap {
 
 	int POLYGONS_PATH_DEFAULT_COLOR = Color.RED;
 	int POLYGONS_PATH_DEFAULT_WIDTH = 4;
-	
+
 	int FOOTPRINT_DEFAULT_COLOR = 0;
 	int FOOTPRINT_DEFAULT_WIDTH = 2;
 	int FOOTPRINT_FILL_COLOR = Color.argb(80, 0, 0, 200);
-	
+
 	String PREF_LAT = "pref_map_lat";
-	float DEFAULT_LATITUDE = 37.8575523f;
+	float DEFAULT_LATITUDE = 31.975317f;
 
 	String PREF_LNG = "pref_map_lng";
-	float DEFAULT_LONGITUDE = -122.292767f;
+	float DEFAULT_LONGITUDE = 188.76619f;
 
 	String PREF_BEA = "pref_map_bea";
 	int DEFAULT_BEARING = 0;
@@ -67,7 +67,7 @@ public interface DPMap {
 	interface OnMapClickListener {
 		/**
 		 * Triggered when the map is clicked.
-		 * 
+		 *
 		 * @param coord
 		 *            location where the map was clicked.
 		 */
@@ -80,7 +80,7 @@ public interface DPMap {
 	interface OnMapLongClickListener {
 		/**
 		 * Triggered when the map is long clicked.
-		 * 
+		 *
 		 * @param coord
 		 *            location where the map was long clicked.
 		 */
@@ -93,7 +93,7 @@ public interface DPMap {
 	interface OnMarkerClickListener {
 		/**
 		 * Triggered when a marker is clicked.
-		 * 
+		 *
 		 * @param markerInfo
 		 *            info about the clicked marker
 		 * @return true if the listener has consumed the event.
@@ -108,7 +108,7 @@ public interface DPMap {
 		/**
 		 * Called repeatedly while a marker is being dragged. The marker's
 		 * location can be accessed via {@link MarkerInfo#getPosition()}
-		 * 
+		 *
 		 * @param markerInfo
 		 *            info about the marker that was dragged.
 		 */
@@ -117,7 +117,7 @@ public interface DPMap {
 		/**
 		 * Called when a marker has finished being dragged. The marker's
 		 * location can be accessed via {@link MarkerInfo#getPosition()}
-		 * 
+		 *
 		 * @param markerInfo
 		 *            info about the marker that was dragged.
 		 */
@@ -128,7 +128,7 @@ public interface DPMap {
 		 * be accessed via {@link MarkerInfo#getPosition()}; this position may
 		 * be different to the position prior to the start of the drag because
 		 * the marker is popped up above the touch point.
-		 * 
+		 *
 		 * @param markerInfo
 		 *            info about the marker that was dragged.
 		 */
@@ -182,7 +182,7 @@ public interface DPMap {
 
 	/**
 	 * Adds a coordinate to the drone's flight path.
-	 * 
+	 *
 	 * @param coord
 	 *            drone's coordinate
 	 */
@@ -267,7 +267,7 @@ public interface DPMap {
 
 	/**
 	 * Remove the markers whose info is in the list from the map.
-	 * 
+	 *
 	 * @param markerInfoList
 	 *            list of markers to remove.
 	 */
@@ -280,7 +280,7 @@ public interface DPMap {
 
 	/**
 	 * Enable map auto panning on the passed target type.
-	 * 
+	 *
 	 * @param mode
 	 *            auto pan target (user / drone / disabled).
 	 */
@@ -288,7 +288,7 @@ public interface DPMap {
 
 	/**
 	 * Adds padding around the edges of the map.
-	 * 
+	 *
 	 * @param left
 	 *            the number of pixels of padding to be added on the left of the
 	 *            map.
@@ -306,7 +306,7 @@ public interface DPMap {
 
 	/**
 	 * Sets a callback that's invoked when the map is tapped.
-	 * 
+	 *
 	 * @param listener
 	 *            The callback that's invoked when the map is tapped. To unset
 	 *            the callback, use null.
@@ -315,7 +315,7 @@ public interface DPMap {
 
 	/**
 	 * Sets a callback that's invoked when the map is long pressed.
-	 * 
+	 *
 	 * @param listener
 	 *            The callback that's invoked when the map is long pressed. To
 	 *            unset the callback, use null.
@@ -324,7 +324,7 @@ public interface DPMap {
 
 	/**
 	 * Sets a callback that's invoked when a marker is clicked.
-	 * 
+	 *
 	 * @param listener
 	 *            The callback that's invoked when a marker is clicked. To unset
 	 *            the callback, use null.
@@ -333,7 +333,7 @@ public interface DPMap {
 
 	/**
 	 * Sets a callback that's invoked when a marker is dragged.
-	 * 
+	 *
 	 * @param listener
 	 *            The callback that's invoked on marker drag events. To unset
 	 *            the callback, use null.
@@ -348,7 +348,7 @@ public interface DPMap {
 
 	/**
 	 * Updates the map's center, and zoom level.
-	 * 
+	 *
 	 * @param coord
 	 *            location for the map center
 	 * @param zoomLevel
@@ -364,7 +364,7 @@ public interface DPMap {
 
 	/**
 	 * Updates the drone leash path on the map.
-	 * 
+	 *
 	 * @param pathSource
 	 *            source to use to generate the drone leash path.
 	 */
@@ -373,7 +373,7 @@ public interface DPMap {
 	/**
 	 * Adds / updates the marker corresponding to the given marker info
 	 * argument.
-	 * 
+	 *
 	 * @param markerInfo
 	 *            used to generate / update the marker
 	 */
@@ -382,7 +382,7 @@ public interface DPMap {
 	/**
 	 * Adds / updates the marker corresponding to the given marker info
 	 * argument.
-	 * 
+	 *
 	 * @param markerInfo
 	 *            used to generate / update the marker
 	 * @param isDraggable
@@ -393,7 +393,7 @@ public interface DPMap {
 	/**
 	 * Adds / updates the markers corresponding to the given list of markers
 	 * infos.
-	 * 
+	 *
 	 * @param markersInfos
 	 *            source for the new markers to add/update
 	 */
@@ -402,7 +402,7 @@ public interface DPMap {
 	/**
 	 * Adds / updates the markers corresponding to the given list of markers
 	 * infos.
-	 * 
+	 *
 	 * @param markersInfos
 	 *            source for the new markers to add/update
 	 * @param isDraggable
@@ -412,21 +412,21 @@ public interface DPMap {
 
 	/**
 	 * Updates the mission path on the map.
-	 * 
+	 *
 	 * @param pathSource
 	 *            source to use to draw the mission path
 	 */
 	void updateMissionPath(PathSource pathSource);
-	
+
 	/**
 	 * Updates the polygons on the map.
-	 * 
+	 *
 	 */
 	void updatePolygonsPaths(List<List<LatLong>> paths);
 
 	/**
 	 * Zoom to fit coordinates on map
-	 * 
+	 *
 	 * @param coords
 	 *            to be displayed
 	 */
@@ -437,7 +437,7 @@ public interface DPMap {
      * @param coords
      */
 	void zoomToFitMyLocation(List<LatLong> coords);
-    
+
     /**
      * Ignore marker clicks on the map and instead report the event as a mapClick
      * @param skip if it should skip further events
@@ -445,5 +445,5 @@ public interface DPMap {
 	void skipMarkerClickEvents(boolean skip);
 
 	void updateRealTimeFootprint(FootPrint footprint);
-    
+
 }

@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingTranslation"
+    tools:locale="en"
+    >
     <integer name="core_lib_version">20905</integer>
     <string name="copter_alt_hold_label">FLY: Manual</string>
     <string name="copter_auto_label">Mission</string>

@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.location.Location;
@@ -28,6 +29,7 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.AMap;
+import com.amap.api.maps.CameraUpdate;
 import com.amap.api.maps.SupportMapFragment;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapsInitializer;
@@ -45,13 +47,13 @@ import com.amap.api.maps.model.Polyline;
 import com.amap.api.maps.model.PolylineOptions;
 import com.amap.api.maps.model.TileOverlay;
 import com.amap.api.maps.model.VisibleRegion;
+
 import com.o3dr.android.client.Drone;
 import com.o3dr.services.android.lib.coordinate.LatLong;
 import com.o3dr.services.android.lib.drone.attribute.AttributeEvent;
 import com.o3dr.services.android.lib.drone.attribute.AttributeType;
 import com.o3dr.services.android.lib.drone.property.FootPrint;
 import com.o3dr.services.android.lib.drone.property.Gps;
-import com.o3dr.services.android.lib.util.googleApi.GoogleApiClientManager;
 
 import org.droidplanner.android.DroidPlannerApp;
 import org.droidplanner.android.R;
@@ -81,7 +83,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 import timber.log.Timber;
@@ -243,8 +244,7 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
         }
     };
 
-//    private GoogleApiClientManager mGApiClientMgr;
-    private AMapClientManager mGApiClientMgr;
+//    private AMapClientManager mGApiClientMgr;
 
 
     private Marker userMarker;
@@ -310,10 +310,12 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         dpApp = (DroidPlannerApp) activity.getApplication();
+        Log.d(TAG,"onAttach");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle bundle) {
+        Log.d(TAG,"onCreateView");
         setHasOptionsMenu(true);
 
         final FragmentActivity activity = getActivity();
@@ -321,10 +323,11 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
 
         lbm = LocalBroadcastManager.getInstance(context);
 
+        initMap();
         final View view = super.onCreateView(inflater, viewGroup, bundle);
 
         mAppPrefs = DroidPlannerPrefs.getInstance(context);
-        mGApiClientMgr = new AMapClientManager(context, new Handler());
+//        mGApiClientMgr = new AMapClientManager(context, new Handler());
 //        mGApiClientMgr.setManagerListener(this);
         final Bundle args = getArguments();
         if (args != null) {
@@ -337,21 +340,23 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
     @Override
     public void onStart() {
         super.onStart();
-        mGApiClientMgr.start();
-
-        mGApiClientMgr.addTask(mRequestLocationUpdateTask);
-        lbm.registerReceiver(eventReceiver, eventFilter);
+//        mGApiClientMgr.start();
         setupMap();
+//        mGApiClientMgr.addTask(mRequestLocationUpdateTask);
+        lbm.registerReceiver(eventReceiver, eventFilter);
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        mGApiClientMgr.addTask(mRemoveLocationUpdateTask);
+//        mGApiClientMgr.addTask(mRemoveLocationUpdateTask);
         lbm.unregisterReceiver(eventReceiver);
 
-        mGApiClientMgr.stopSafely();
+//        mGApiClientMgr.stopSafely();
+        if (mLocationClient.isStarted()) {
+            mLocationClient.stopLocation();
+        }
     }
 
     @Override
@@ -384,11 +389,17 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
 
     }
 
-    private void setUpMapIfNeeded() {
-        if (mMap == null) {
-            Log.d(TAG, "get Map");
+    private void initMap() {
+        Log.d(TAG, "setUpMapIfNeeded");
+        // Make sure the map is initialized
+        try {
+            MapsInitializer.initialize(getActivity().getApplicationContext());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
 
-            mMap = SupportMapFragment.newInstance().getMap();
+        if (mMap == null) {
+            mMap = getMap();
         }
 
         mLocationClient = new AMapLocationClient(dpApp);
@@ -400,7 +411,8 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
             public void onLocationChanged(AMapLocation location) {
                 if (location != null) {
                     if (location.getErrorCode() == 0) {
-                        //定位成功回调信息，设置相关消息
+                        Log.d(TAG,"onLocationChanged: " + location.toStr());
+                                //定位成功回调信息，设置相关消息
                         location.getLocationType();//获取当前定位结果来源，如网络定位结果，详见定位类型表
                         location.getLatitude();//获取纬度
                         location.getLongitude();//获取经度
@@ -700,36 +712,27 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
         //Update the listener with the last received location
         if (mLocationListener != null) {
 //            mGApiClientMgr.addTask(requestLastLocationTask);
+
+            final Location lastLocation = mLocationClient.getLastKnownLocation();
+            if (lastLocation != null && mLocationListener != null) {
+                mLocationListener.onLocationChanged(lastLocation);
+            }
         }
     }
 
     private void updateCamera(final LatLong coord) {
         if (coord != null) {
-//            getMapAsync(new OnMapReadyCallback() {
-//                @Override
-//                public void onMapReady(GoogleMap googleMap) {
-//                    final float zoomLevel = googleMap.getCameraPosition().zoom;
-//                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(DroneHelper.CoordToLatLang(coord),
-//                            zoomLevel));
-//                }
-//            });
 
             final float zoomLevel = mMap.getCameraPosition().zoom;
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(DroneHelper.CoordToAMapLatLang(coord),
-                        zoomLevel));
+            updateCamera(coord, zoomLevel);
         }
     }
 
     @Override
     public void updateCamera(final LatLong coord, final float zoomLevel) {
+        Log.d(TAG, "updateCamera");
         if (coord != null) {
-//            getMapAsync(new OnMapReadyCallback() {
-//                @Override
-//                public void onMapReady(GoogleMap googleMap) {
-//                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-//                            DroneHelper.CoordToLatLang(coord), zoomLevel));
-//                }
-//            });
+
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
                     DroneHelper.CoordToAMapLatLang(coord), zoomLevel));
         }
@@ -783,14 +786,6 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
             pathOptions.color(MISSION_PATH_DEFAULT_COLOR).width(MISSION_PATH_DEFAULT_WIDTH);
             missionPath = getMap().addPolyline(pathOptions);
             missionPath.setPoints(pathPoints);
-
-//            getMapAsync(new OnMapReadyCallback() {
-//                @Override
-//                public void onMapReady(GoogleMap googleMap) {
-//                    missionPath = getMap().addPolyline(pathOptions);
-//                    missionPath.setPoints(pathPoints);
-//                }
-//            });
         }
         else {
             missionPath.setPoints(pathPoints);
@@ -854,70 +849,63 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
 
     @Override
     public void loadCameraPosition() {
-//        getMapAsync(loadCameraPositionTask);
+        //getMapAsync(loadCameraPositionTask);
+        final SharedPreferences settings = mAppPrefs.prefs;
+
+        final CameraPosition.Builder camera = new CameraPosition.Builder();
+        camera.bearing(settings.getFloat(PREF_BEA, DEFAULT_BEARING));
+        camera.tilt(settings.getFloat(PREF_TILT, DEFAULT_TILT));
+        camera.zoom(settings.getFloat(PREF_ZOOM, DEFAULT_ZOOM_LEVEL));
+        camera.target(new LatLng(settings.getFloat(PREF_LAT, DEFAULT_LATITUDE),
+                settings.getFloat(PREF_LNG, DEFAULT_LONGITUDE)));
+
+        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camera.build()));
     }
 
     private void setupMap() {
         Log.d(TAG,"------setupMap");
-        // Make sure the map is initialized
-        try {
-            MapsInitializer.initialize(getActivity().getApplicationContext());
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        setUpMapIfNeeded();
+
 //        getMapAsync(setupMapTask);
+        setupMapUI(mMap);
+        setupMapOverlay(mMap);
+        setupMapListeners(mMap);
     }
 
     @Override
     public void zoomToFit(List<LatLong> coords) {
         if (!coords.isEmpty()) {
             final List<LatLng> points = new ArrayList<LatLng>();
-            for (LatLong coord : coords)
+            for (LatLong coord : coords){
                 points.add(DroneHelper.CoordToAMapLatLang(coord));
+            }
 
             final LatLngBounds bounds = getBounds(points);
-//            getMapAsync(new OnMapReadyCallback() {
-//                @Override
-//                public void onMapReady(GoogleMap googleMap) {
-//                    final Activity activity = getActivity();
-//                    if (activity == null)
-//                        return;
-//
-//                    final View rootView = ((ViewGroup) activity.findViewById(android.R.id.content)).getChildAt(0);
-//                    if (rootView == null)
-//                        return;
-//
-//                    final int height = rootView.getHeight();
-//                    final int width = rootView.getWidth();
-//                    Timber.d("Screen W %d, H %d", width, height);
-//                    if (height > 0 && width > 0) {
-//                        CameraUpdate animation = CameraUpdateFactory.newLatLngBounds(bounds, width, height, 100);
-//                        googleMap.animateCamera(animation);
-//                    }
-//                }
-//            });
+
+            final Activity activity = getActivity();
+            if (activity == null)
+                return;
+
+            final View rootView = ((ViewGroup) activity.findViewById(android.R.id.content)).getChildAt(0);
+            if (rootView == null)
+                return;
+
+            final int height = rootView.getHeight();
+            final int width = rootView.getWidth();
+            Timber.d("Screen W %d, H %d", width, height);
+            if (height > 0 && width > 0) {
+                CameraUpdate animation = CameraUpdateFactory.newLatLngBounds(bounds, width, height, 100);
+                mMap.animateCamera(animation);
+            }
+
         }
     }
 
     @Override
     public void zoomToFitMyLocation(final List<LatLong> coords) {
-//        mGApiClientMgr.addTask(new GoogleApiClientTask() {
-//            @Override
-//            protected void doRun() {
-//                final Location myLocation = LocationServices.FusedLocationApi.getLastLocation(getGoogleApiClient());
-//                if (myLocation != null) {
-//                    final List<LatLong> updatedCoords = new ArrayList<LatLong>(coords);
-//                    updatedCoords.add(DroneHelper.LocationToCoord(myLocation));
-//                    zoomToFit(updatedCoords);
-//                } else {
-//                    zoomToFit(coords);
-//                }
-//            }
-//        });
+
         final Location myLocation = mLocationClient.getLastKnownLocation();
         if (myLocation != null) {
-            final List<LatLong> updatedCoords = new ArrayList<LatLong>(coords);
+            final List<LatLong> updatedCoords = new ArrayList<>(coords);
             updatedCoords.add(DroneHelper.LocationToCoord(myLocation));
             zoomToFit(updatedCoords);
         } else {
@@ -927,13 +915,23 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
 
     @Override
     public void goToMyLocation() {
-        if (!mGApiClientMgr.addTask(mGoToMyLocationTask)) {
-            Timber.e("Unable to add google api client task.");
+        Log.d(TAG, "goToMyLocation");
+//        if (!mGApiClientMgr.addTask(mGoToMyLocationTask)) {
+//            Timber.e("Unable to add  client task.");
+//        }
+
+        final Location myLocation = mLocationClient.getLastKnownLocation();
+        if (myLocation != null) {
+            updateCamera(DroneHelper.LocationToCoord(myLocation), GO_TO_MY_LOCATION_ZOOM);
+
+            if (mLocationListener != null)
+                mLocationListener.onLocationChanged(myLocation);
         }
     }
 
     @Override
     public void goToDroneLocation() {
+        Log.d(TAG,"goToDroneLocation");
         Drone dpApi = getDroneApi();
         if (!dpApi.isConnected())
             return;
@@ -1046,13 +1044,6 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
                 setupAMapTileProvider(context, map);
                 break;
 
-//            case GoogleMapPrefConstants.MAPBOX_TILE_PROVIDER:
-//                setupMapboxTileProvider(context, map);
-//                break;
-//
-//            case GoogleMapPrefConstants.ARC_GIS_TILE_PROVIDER:
-//                setupArcGISTileProvider(context, map);
-//                break;
         }
     }
 
@@ -1061,15 +1052,15 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
         tileProviderManager = null;
 
         //Remove the mapbox tile providers
-//        if(offlineTileOverlay != null){
-//            offlineTileOverlay.remove();
-//            offlineTileOverlay = null;
-//        }
-//
-//        if(onlineTileOverlay != null){
-//            onlineTileOverlay.remove();
-//            onlineTileOverlay = null;
-//        }
+        if(offlineTileOverlay != null){
+            offlineTileOverlay.remove();
+            offlineTileOverlay = null;
+        }
+
+        if(onlineTileOverlay != null){
+            onlineTileOverlay.remove();
+            onlineTileOverlay = null;
+        }
 
         map.setMapType(GoogleMapPrefFragment.PrefManager.getMapType(context));
     }
@@ -1077,9 +1068,7 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
     private void setupAMapTileProvider(Context context, AMap map){
         //Reset the tile provider manager
         tileProviderManager = null;
-
-
-        map.setMapType(GoogleMapPrefFragment.PrefManager.getMapType(context));
+        map.setMapType(AMapPrefFragment.PrefManager.getMapType(context));
     }
 /*
     private void setupArcGISTileProvider(Context context, AMap map){
@@ -1266,49 +1255,4 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
         }
 
     }
-
-    /*
-    @Override
-    public void onGoogleApiConnectionError(ConnectionResult connectionResult) {
-        final Activity activity = getActivity();
-        if (activity == null)
-            return;
-
-        if (connectionResult.hasResolution()) {
-            try {
-                connectionResult.startResolutionForResult(activity, 0);
-            } catch (IntentSender.SendIntentException e) {
-                //There was an error with the resolution intent. Try again.
-                if (mGApiClientMgr != null)
-                    mGApiClientMgr.start();
-            }
-        } else {
-            onUnavailableGooglePlayServices(connectionResult.getErrorCode());
-        }
-    }
-
-    @Override
-    public void onUnavailableGooglePlayServices(int i) {
-        final Activity activity = getActivity();
-        if (activity != null) {
-            GooglePlayServicesUtil.showErrorDialogFragment(i, getActivity(), 0, new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    activity.finish();
-                }
-            });
-        }
-    }
-
-
-    @Override
-    public void onManagerStarted() {
-
-    }
-
-    @Override
-    public void onManagerStopped() {
-
-    }
-           */
 }

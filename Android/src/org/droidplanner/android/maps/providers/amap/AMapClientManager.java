@@ -157,7 +157,7 @@ public class AMapClientManager {
      */
     public boolean addTask(AMapClientTask task) {
         if (!isStarted()) {
-            Log.d(TAG, "GoogleApiClientManager is not started.");
+            Log.d(TAG, "AMapApiClientManager is not started.");
             return false;
         }
 
@@ -177,7 +177,7 @@ public class AMapClientManager {
      */
     public boolean addTaskToBackground(AMapClientTask task) {
         if (!isStarted()) {
-            Log.d(TAG, "GoogleApiClientManager is not started.");
+            Log.d(TAG, "AMapApiClientManager is not started.");
             return false;
         }
 
@@ -210,32 +210,10 @@ public class AMapClientManager {
             if (mLocationClient.isStarted()) {
                 onConnected(null);
             } else if (!mLocationClient.isStarted()) {
-                //Connect to the google api.
                 mLocationClient.startLocation();
             }
-        } else {
-            Log.e(TAG, "Google Play Services is unavailable.");
-//            if (listener != null)
-//                listener.onUnavailableGooglePlayServices(playStatus);
         }
     }
-
-//    private boolean isGooglePlayServicesValid(){
-//        // Check for the google play services is available
-//
-//        if(!isValid){
-//            PendingIntent errorPI = GooglePlayServicesUtil.getErrorPendingIntent(playStatus, mContext, 0);
-//            if(errorPI != null){
-//                try {
-//                    errorPI.send();
-//                } catch (PendingIntent.CanceledException e) {
-//                    Log.e(TAG, "Seems the pending intent was cancelled.", e);
-//                }
-//            }
-//        }
-//
-//        return isValid;
-//    }
 
     /**
      * Release the resources used by this manager.
