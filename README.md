@@ -1,6 +1,3 @@
-[![Build Status](https://travis-ci.org/DroidPlanner/Tower.svg?branch=develop)](https://travis-ci.org/DroidPlanner/Tower)
-[![Issue Stats](http://issuestats.com/github/DroidPlanner/Tower/badge/pr)](http://issuestats.com/github/DroidPlanner/Tower)
-[![Issue Stats](http://issuestats.com/github/DroidPlanner/Tower/badge/issue)](http://issuestats.com/github/DroidPlanner/Tower)
 
 # cTower: Tower for Chinese cellphones.
 
@@ -23,8 +20,10 @@ cTower在尽量保留Tower原版最新功能的基础上，针对国内手机进
  4. 修改了应用ID，避免和原版Tower冲突
  5. 修改gradle配置，适配高德地图，解决GFW导致一些repo下载慢无法编译的问题
  6. 增强简体中文翻译
+ 
+ ### [下载cTower3.2.2版本](http://o79096vir.bkt.clouddn.com/ctower/cTower-v3.2.2-release.apk)
 
-[![Google Play Store](https://developer.android.com/images/brand/en_app_rgb_wo_45.png)](https://play.google.com/store/apps/details?id=org.droidplanner.android)
+下载Tower官方版本 [![Google Play Store](https://developer.android.com/images/brand/en_app_rgb_wo_45.png)](https://play.google.com/store/apps/details?id=org.droidplanner.android)
 
 ### Usage Guide
 
