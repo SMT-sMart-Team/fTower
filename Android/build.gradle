@@ -3,6 +3,7 @@ apply plugin: 'io.fabric'
 apply plugin: 'kotlin-android'
 
 dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:multidex:1.0.1'
 
     compile "com.google.android.gms:play-services-maps:${play_services_version}"
@@ -82,7 +83,7 @@ android {
         //Manifest placeholders (http://tools.android.com/tech-docs/new-build-system/user-guide/manifest-merger#TOC-Placeholder-support)
         manifestPlaceholders = [
             fabricApiKey:getFabricApiKey(),
-            amapApiKey:'f6fa2b2db544de390187e50dd46fe394'
+            amapApiKey:'f6fa2b2db544de390187e50dd46fe394' //高德地图apikey
         ]
 
         // Enabling multidex support.
@@ -104,6 +105,7 @@ android {
             renderscript.srcDirs = ['src']
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
+            jniLibs.srcDirs = ['libs']
         }
 
         // Move the build types to build-types/<type>
@@ -133,6 +135,27 @@ android {
         }
     }
 
+    buildTypes {
+        release {
+            minifyEnabled false
+            zipAlignEnabled true
+            shrinkResources true
+            signingConfig signingConfigs.release
+            //proguardFiles 'proguard-rules.pro'
+            ext.enableCrashlytics = false
+            resValue "string", "app_title", "cnTower"
+        }
+
+        debug {
+            minifyEnabled false
+            zipAlignEnabled false
+            shrinkResources false
+            ext.enableCrashlytics = false
+            resValue "string", "app_title", "cnTower Debug"
+        }
+    }
+
+    /*
     android.applicationVariants.all { variant ->
         variant.outputs.each { output ->
             def file = output.outputFile
@@ -213,7 +236,7 @@ android {
             signingConfig signingConfigs.release
             buildConfigField "boolean", "ENABLE_CRASHLYTICS", "${hasFabricApiKey()}"
         }
-    }
+    } */
     buildToolsVersion '24'
 }
 
