@@ -69,5 +69,5 @@ public enum DPMapProvider {
 	/**
 	 * By default, Google Map is the map provider.
 	 */
-	public static final DPMapProvider DEFAULT_MAP_PROVIDER = GOOGLE_MAP;
+	public static final DPMapProvider DEFAULT_MAP_PROVIDER = AMAP;
 }

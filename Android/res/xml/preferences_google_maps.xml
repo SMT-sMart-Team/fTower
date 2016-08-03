@@ -59,7 +59,7 @@
 
         <PreferenceCategory
             android:key="pref_amap_tile_provider_settings"
-            android:title="@string/pref_title_google_tile_provider">
+            android:title="@string/pref_title_amap_tile_provider">
             <ListPreference
                 android:defaultValue="satellite"
                 android:entries="@array/MapTypes"

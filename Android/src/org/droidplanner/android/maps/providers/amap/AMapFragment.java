@@ -3,20 +3,17 @@ package org.droidplanner.android.maps.providers.amap;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.IntentSender;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,8 +22,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
+import com.amap.api.maps.AMap;
+import com.amap.api.maps.SupportMapFragment;
 import com.amap.api.maps.CameraUpdateFactory;
-import com.amap.api.maps.MapView;
 import com.amap.api.maps.MapsInitializer;
 import com.amap.api.maps.Projection;
 import com.amap.api.maps.UiSettings;
@@ -41,7 +44,6 @@ import com.amap.api.maps.model.PolygonOptions;
 import com.amap.api.maps.model.Polyline;
 import com.amap.api.maps.model.PolylineOptions;
 import com.amap.api.maps.model.TileOverlay;
-import com.amap.api.maps.model.TileOverlayOptions;
 import com.amap.api.maps.model.VisibleRegion;
 import com.o3dr.android.client.Drone;
 import com.o3dr.services.android.lib.coordinate.LatLong;
@@ -50,7 +52,6 @@ import com.o3dr.services.android.lib.drone.attribute.AttributeType;
 import com.o3dr.services.android.lib.drone.property.FootPrint;
 import com.o3dr.services.android.lib.drone.property.Gps;
 import com.o3dr.services.android.lib.util.googleApi.GoogleApiClientManager;
-import com.o3dr.services.android.lib.util.googleApi.GoogleApiClientManager.GoogleApiClientTask;
 
 import org.droidplanner.android.DroidPlannerApp;
 import org.droidplanner.android.R;
@@ -59,30 +60,28 @@ import org.droidplanner.android.graphic.map.GraphicHome;
 import org.droidplanner.android.maps.DPMap;
 import org.droidplanner.android.maps.MarkerInfo;
 import org.droidplanner.android.maps.providers.DPMapProvider;
+import org.droidplanner.android.maps.providers.amap.AMapClientManager.AMapClientTask;
 import org.droidplanner.android.maps.providers.google_map.AMapPrefFragment;
 import org.droidplanner.android.maps.providers.google_map.DownloadMapboxMapActivity;
 import org.droidplanner.android.maps.providers.google_map.GoogleMapPrefConstants;
 import org.droidplanner.android.maps.providers.google_map.GoogleMapPrefFragment;
 import org.droidplanner.android.maps.providers.google_map.tiles.TileProviderManager;
-import org.droidplanner.android.maps.providers.google_map.tiles.arcgis.ArcGISTileProviderManager;
-import org.droidplanner.android.maps.providers.google_map.tiles.mapbox.MapboxTileProviderManager;
-import org.droidplanner.android.maps.providers.google_map.tiles.mapbox.MapboxUtils;
 import org.droidplanner.android.maps.providers.google_map.tiles.mapbox.offline.MapDownloader;
 import org.droidplanner.android.utils.DroneHelper;
 import org.droidplanner.android.utils.collection.HashBiMap;
 import org.droidplanner.android.utils.prefs.AutoPanMode;
 import org.droidplanner.android.utils.prefs.DroidPlannerPrefs;
 
-import com.amap.api.maps.AMap;
-import com.amap.api.maps.SupportMapFragment;
 
-import java.net.HttpURLConnection;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 import timber.log.Timber;
@@ -99,6 +98,7 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
     private static final int OFFLINE_TILE_PROVIDER_Z_INDEX = -2;
 
     private static final IntentFilter eventFilter = new IntentFilter();
+    private static final String TAG = "AMapFragment";
 
     static {
         eventFilter.addAction(AttributeEvent.GPS_POSITION);
@@ -113,6 +113,7 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
+            Log.d(TAG, "eventReceiver " + action);
             switch (action) {
                 case AttributeEvent.GPS_POSITION:
                     if (mPanMode.get() == AutoPanMode.DRONE) {
@@ -144,6 +145,9 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
             AutoPanMode.DISABLED);
 
     private final Handler handler = new Handler();
+
+    public AMapLocationClientOption mLocationOption = null;
+    AMapLocationClient mLocationClient;
 
 /*    private final LocationCallback locationCb = new LocationCallback() {
         @Override
@@ -188,12 +192,12 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
                 mLocationListener.onLocationChanged(location);
             }
         }
-    };
+    }; */
 
-    private final GoogleApiClientTask mGoToMyLocationTask = new GoogleApiClientTask() {
+    private final AMapClientTask mGoToMyLocationTask = new AMapClientTask() {
         @Override
         public void doRun() {
-            final Location myLocation = LocationServices.FusedLocationApi.getLastLocation(getGoogleApiClient());
+            final Location myLocation = mLocationClient.getLastKnownLocation();
             if (myLocation != null) {
                 updateCamera(DroneHelper.LocationToCoord(myLocation), GO_TO_MY_LOCATION_ZOOM);
 
@@ -203,38 +207,45 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
         }
     };
 
-    private final GoogleApiClientTask mRemoveLocationUpdateTask = new GoogleApiClientTask() {
+    private final AMapClientTask mRemoveLocationUpdateTask = new AMapClientTask() {
         @Override
         public void doRun() {
-            LocationServices.FusedLocationApi.removeLocationUpdates(getGoogleApiClient(), locationCb);
+//            LocationServices.FusedLocationApi.removeLocationUpdates(getGoogleApiClient(), locationCb);
+            Log.d(TAG,"mRemoveLocationUpdateTask");
         }
     };
 
-    private final GoogleApiClientTask mRequestLocationUpdateTask = new GoogleApiClientTask() {
+    private final AMapClientTask mRequestLocationUpdateTask = new AMapClientTask() {
         @Override
         public void doRun() {
-            final LocationRequest locationReq = LocationRequest.create()
-                    .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                    .setFastestInterval(USER_LOCATION_UPDATE_FASTEST_INTERVAL)
-                    .setInterval(USER_LOCATION_UPDATE_INTERVAL)
-                    .setSmallestDisplacement(USER_LOCATION_UPDATE_MIN_DISPLACEMENT);
+//            final LocationRequest locationReq = LocationRequest.create()
+//                    .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+//                    .setFastestInterval(USER_LOCATION_UPDATE_FASTEST_INTERVAL)
+//                    .setInterval(USER_LOCATION_UPDATE_INTERVAL)
+//                    .setSmallestDisplacement(USER_LOCATION_UPDATE_MIN_DISPLACEMENT);
 
-            LocationServices.FusedLocationApi.requestLocationUpdates(getGoogleApiClient(), locationReq,
-                    locationCb, handler.getLooper());
+//            LocationServices.FusedLocationApi.requestLocationUpdates(getGoogleApiClient(), locationReq,
+//                    locationCb, handler.getLooper());
+            Log.d(TAG,"mRequestLocationUpdateTask");
+            mLocationClient.startLocation();
         }
     };
 
-    private final GoogleApiClientTask requestLastLocationTask = new GoogleApiClientTask() {
+    private final AMapClientTask requestLastLocationTask = new AMapClientTask() {
         @Override
         protected void doRun() {
-            final Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(getGoogleApiClient());
+//            final Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(getGoogleApiClient());
+
+            final Location lastLocation = mLocationClient.getLastKnownLocation();
             if (lastLocation != null && mLocationListener != null) {
                 mLocationListener.onLocationChanged(lastLocation);
             }
         }
-    }; */
+    };
 
 //    private GoogleApiClientManager mGApiClientMgr;
+    private AMapClientManager mGApiClientMgr;
+
 
     private Marker userMarker;
 
@@ -312,10 +323,9 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
 
         final View view = super.onCreateView(inflater, viewGroup, bundle);
 
-        setUpMapIfNeeded();
-
         mAppPrefs = DroidPlannerPrefs.getInstance(context);
-
+        mGApiClientMgr = new AMapClientManager(context, new Handler());
+//        mGApiClientMgr.setManagerListener(this);
         final Bundle args = getArguments();
         if (args != null) {
             maxFlightPathSize = args.getInt(EXTRA_MAX_FLIGHT_PATH_SIZE);
@@ -327,9 +337,9 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
     @Override
     public void onStart() {
         super.onStart();
-//        mGApiClientMgr.start();
+        mGApiClientMgr.start();
 
-//        mGApiClientMgr.addTask(mRequestLocationUpdateTask);
+        mGApiClientMgr.addTask(mRequestLocationUpdateTask);
         lbm.registerReceiver(eventReceiver, eventFilter);
         setupMap();
     }
@@ -338,10 +348,10 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
     public void onStop() {
         super.onStop();
 
-//        mGApiClientMgr.addTask(mRemoveLocationUpdateTask);
+        mGApiClientMgr.addTask(mRemoveLocationUpdateTask);
         lbm.unregisterReceiver(eventReceiver);
 
-//        mGApiClientMgr.stopSafely();
+        mGApiClientMgr.stopSafely();
     }
 
     @Override
@@ -376,8 +386,75 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
 
     private void setUpMapIfNeeded() {
         if (mMap == null) {
-            mMap = new MapView(getActivity()).getMap();
+            Log.d(TAG, "get Map");
+
+            mMap = SupportMapFragment.newInstance().getMap();
         }
+
+        mLocationClient = new AMapLocationClient(dpApp);
+//初始化定位参数
+        mLocationOption = new AMapLocationClientOption();
+//设置定位监听
+        mLocationClient.setLocationListener(new AMapLocationListener() {
+            @Override
+            public void onLocationChanged(AMapLocation location) {
+                if (location != null) {
+                    if (location.getErrorCode() == 0) {
+                        //定位成功回调信息，设置相关消息
+                        location.getLocationType();//获取当前定位结果来源，如网络定位结果，详见定位类型表
+                        location.getLatitude();//获取纬度
+                        location.getLongitude();//获取经度
+                        location.getAccuracy();//获取精度信息
+                        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        Date date = new Date(location.getTime());
+                        df.format(date);//定位时间
+
+                        //Update the user location icon.
+                        if (userMarker == null) {
+                            final MarkerOptions options = new MarkerOptions()
+                                    .position(new LatLng(location.getLatitude(), location.getLongitude()))
+                                    .draggable(false)
+                                    .setFlat(true)
+                                    .visible(true)
+                                    .anchor(0.5f, 0.5f)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.user_location));
+
+                            userMarker = mMap.addMarker(options);
+
+                        } else {
+                            userMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
+                        }
+
+                        if (mPanMode.get() == AutoPanMode.USER) {
+                            Timber.d("User location changed.");
+                            updateCamera(DroneHelper.LocationToCoord(location), (int) getMap().getCameraPosition().zoom);
+                        }
+
+                        if (mLocationListener != null) {
+                            mLocationListener.onLocationChanged(location);
+                        }
+
+                    } else {
+                        //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。
+                        Log.e("AmapError","location Error, ErrCode:"
+                                + location.getErrorCode() + ", errInfo:"
+                                + location.getErrorInfo());
+                    }
+                }
+            }
+        });
+//设置定位模式为高精度模式，Battery_Saving为低功耗模式，Device_Sensors是仅设备模式
+        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+//设置定位间隔,单位毫秒,默认为2000ms
+        mLocationOption.setInterval(2000);
+//设置定位参数
+        mLocationClient.setLocationOption(mLocationOption);
+// 此方法为每隔固定时间会发起一次定位请求，为了减少电量消耗或网络流量消耗，
+// 注意设置合适的定位时间的间隔（最小间隔支持为2000ms），并且在合适时间调用stopLocation()方法来取消定位请求
+// 在定位结束后，在合适的生命周期调用onDestroy()方法
+// 在单次定位情况下，定位无论成功与否，都无需调用stopLocation()方法移除请求，定位sdk内部会移除
+//启动定位
+        mLocationClient.startLocation();
     }
 
     private boolean shouldShowDownloadMapMenuOption(){
@@ -636,7 +713,8 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
 //                            zoomLevel));
 //                }
 //            });
-                final float zoomLevel = mMap.getCameraPosition().zoom;
+
+            final float zoomLevel = mMap.getCameraPosition().zoom;
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(DroneHelper.CoordToAMapLatLang(coord),
                         zoomLevel));
         }
@@ -780,13 +858,14 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
     }
 
     private void setupMap() {
+        Log.d(TAG,"------setupMap");
         // Make sure the map is initialized
         try {
             MapsInitializer.initialize(getActivity().getApplicationContext());
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-
+        setUpMapIfNeeded();
 //        getMapAsync(setupMapTask);
     }
 
@@ -836,13 +915,21 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
 //                }
 //            }
 //        });
+        final Location myLocation = mLocationClient.getLastKnownLocation();
+        if (myLocation != null) {
+            final List<LatLong> updatedCoords = new ArrayList<LatLong>(coords);
+            updatedCoords.add(DroneHelper.LocationToCoord(myLocation));
+            zoomToFit(updatedCoords);
+        } else {
+            zoomToFit(coords);
+        }
     }
 
     @Override
     public void goToMyLocation() {
-//        if (!mGApiClientMgr.addTask(mGoToMyLocationTask)) {
-//            Timber.e("Unable to add google api client task.");
-//        }
+        if (!mGApiClientMgr.addTask(mGoToMyLocationTask)) {
+            Timber.e("Unable to add google api client task.");
+        }
     }
 
     @Override
@@ -1222,5 +1309,6 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
     @Override
     public void onManagerStopped() {
 
-    } */
+    }
+           */
 }
