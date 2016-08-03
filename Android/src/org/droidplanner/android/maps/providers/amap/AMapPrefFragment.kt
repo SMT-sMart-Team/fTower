@@ -26,7 +26,7 @@ class AMapPrefFragment : MapProviderPreferences(), EditInputDialog.Listener {
         private val MAPBOX_ACCESS_TOKEN_DIALOG_TAG = "Mapbox access token dialog"
         private val MAPBOX_ID_DIALOG_TAG = "Mapbox map credentials dialog"
 
-        val DEFAULT_TILE_PROVIDER = GOOGLE_TILE_PROVIDER
+        val DEFAULT_TILE_PROVIDER = AMAP_TILE_PROVIDER
 
         val MAP_TYPE_SATELLITE = "satellite"
         val MAP_TYPE_HYBRID = "hybrid"

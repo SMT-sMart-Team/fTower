@@ -33,7 +33,9 @@ import org.droidplanner.android.activities.DrawerNavigationUI;
 import org.droidplanner.android.fragments.control.FlightControlManagerFragment;
 import org.droidplanner.android.fragments.helpers.ApiListenerFragment;
 import org.droidplanner.android.fragments.mode.FlightModePanel;
+import org.droidplanner.android.maps.providers.DPMapProvider;
 import org.droidplanner.android.utils.prefs.AutoPanMode;
+import org.droidplanner.android.utils.prefs.DroidPlannerPrefs;
 import org.droidplanner.android.view.SlidingDrawer;
 
 import java.util.HashMap;
@@ -373,7 +375,14 @@ public class FlightDataFragment extends ApiListenerFragment implements SlidingDr
      */
     private void setupMapFragment() {
         final FragmentManager fm = getChildFragmentManager();
-        if (mapFragment == null && isGooglePlayServicesValid(true)) {
+
+        if ( DroidPlannerPrefs.getInstance(getContext()).getMapProviderName().equals(DPMapProvider.GOOGLE_MAP.name())) {
+            if (!isGooglePlayServicesValid(true)){
+                return;
+            }
+        }
+
+        if (mapFragment == null ) {
             mapFragment = (FlightMapFragment) fm.findFragmentById(R.id.flight_map_fragment);
             if (mapFragment == null) {
                 mapFragment = new FlightMapFragment();
