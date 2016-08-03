@@ -472,5 +472,5 @@ class AMapPrefFragment : MapProviderPreferences(), EditInputDialog.Listener {
         }
     }
 
-    override fun getMapProvider(): DPMapProvider? = DPMapProvider.GOOGLE_MAP
+    override fun getMapProvider(): DPMapProvider? = DPMapProvider.AMAP
 }
