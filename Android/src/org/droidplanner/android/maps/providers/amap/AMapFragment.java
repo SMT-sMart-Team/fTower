@@ -62,7 +62,6 @@ import org.droidplanner.android.graphic.map.GraphicHome;
 import org.droidplanner.android.maps.DPMap;
 import org.droidplanner.android.maps.MarkerInfo;
 import org.droidplanner.android.maps.providers.DPMapProvider;
-import org.droidplanner.android.maps.providers.amap.AMapClientManager.AMapClientTask;
 import org.droidplanner.android.maps.providers.google_map.AMapPrefFragment;
 import org.droidplanner.android.maps.providers.google_map.DownloadMapboxMapActivity;
 import org.droidplanner.android.maps.providers.google_map.GoogleMapPrefConstants;
@@ -106,8 +105,6 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
         eventFilter.addAction(SettingsFragment.ACTION_MAP_ROTATION_PREFERENCE_UPDATED);
     }
 
-//    private final static Api<? extends Api.ApiOptions.NotRequiredOptions>[] apisList = new Api[]{LocationServices.API};
-
     private AMap mMap;
 
     private final BroadcastReceiver eventReceiver = new BroadcastReceiver() {
@@ -150,103 +147,6 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
     public AMapLocationClientOption mLocationOption = null;
     AMapLocationClient mLocationClient;
 
-/*    private final LocationCallback locationCb = new LocationCallback() {
-        @Override
-        public void onLocationAvailability(LocationAvailability locationAvailability) {
-            super.onLocationAvailability(locationAvailability);
-        }
-
-        @Override
-        public void onLocationResult(LocationResult result) {
-            super.onLocationResult(result);
-
-            final Location location = result.getLastLocation();
-            if (location == null)
-                return;
-
-            //Update the user location icon.
-            if (userMarker == null) {
-                final MarkerOptions options = new MarkerOptions()
-                        .position(new LatLng(location.getLatitude(), location.getLongitude()))
-                        .draggable(false)
-                        .flat(true)
-                        .visible(true)
-                        .anchor(0.5f, 0.5f)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.user_location));
-
-                getMapAsync(new OnMapReadyCallback() {
-                    @Override
-                    public void onMapReady(GoogleMap googleMap) {
-                        userMarker = googleMap.addMarker(options);
-                    }
-                });
-            } else {
-                userMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
-            }
-
-            if (mPanMode.get() == AutoPanMode.USER) {
-                Timber.d("User location changed.");
-                updateCamera(DroneHelper.LocationToCoord(location), (int) getMap().getCameraPosition().zoom);
-            }
-
-            if (mLocationListener != null) {
-                mLocationListener.onLocationChanged(location);
-            }
-        }
-    }; */
-
-    private final AMapClientTask mGoToMyLocationTask = new AMapClientTask() {
-        @Override
-        public void doRun() {
-            final Location myLocation = mLocationClient.getLastKnownLocation();
-            if (myLocation != null) {
-                updateCamera(DroneHelper.LocationToCoord(myLocation), GO_TO_MY_LOCATION_ZOOM);
-
-                if (mLocationListener != null)
-                    mLocationListener.onLocationChanged(myLocation);
-            }
-        }
-    };
-
-    private final AMapClientTask mRemoveLocationUpdateTask = new AMapClientTask() {
-        @Override
-        public void doRun() {
-//            LocationServices.FusedLocationApi.removeLocationUpdates(getGoogleApiClient(), locationCb);
-            Log.d(TAG,"mRemoveLocationUpdateTask");
-        }
-    };
-
-    private final AMapClientTask mRequestLocationUpdateTask = new AMapClientTask() {
-        @Override
-        public void doRun() {
-//            final LocationRequest locationReq = LocationRequest.create()
-//                    .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-//                    .setFastestInterval(USER_LOCATION_UPDATE_FASTEST_INTERVAL)
-//                    .setInterval(USER_LOCATION_UPDATE_INTERVAL)
-//                    .setSmallestDisplacement(USER_LOCATION_UPDATE_MIN_DISPLACEMENT);
-
-//            LocationServices.FusedLocationApi.requestLocationUpdates(getGoogleApiClient(), locationReq,
-//                    locationCb, handler.getLooper());
-            Log.d(TAG,"mRequestLocationUpdateTask");
-            mLocationClient.startLocation();
-        }
-    };
-
-    private final AMapClientTask requestLastLocationTask = new AMapClientTask() {
-        @Override
-        protected void doRun() {
-//            final Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(getGoogleApiClient());
-
-            final Location lastLocation = mLocationClient.getLastKnownLocation();
-            if (lastLocation != null && mLocationListener != null) {
-                mLocationListener.onLocationChanged(lastLocation);
-            }
-        }
-    };
-
-//    private AMapClientManager mGApiClientMgr;
-
-
     private Marker userMarker;
 
     private Polyline flightPath;
@@ -277,32 +177,6 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
     private TileOverlay offlineTileOverlay;
 
     private TileProviderManager tileProviderManager;
-
-    /*
-    private final OnMapReadyCallback loadCameraPositionTask = new OnMapReadyCallback() {
-        @Override
-        public void onMapReady(GoogleMap googleMap) {
-            final SharedPreferences settings = mAppPrefs.prefs;
-
-            final CameraPosition.Builder camera = new CameraPosition.Builder();
-            camera.bearing(settings.getFloat(PREF_BEA, DEFAULT_BEARING));
-            camera.tilt(settings.getFloat(PREF_TILT, DEFAULT_TILT));
-            camera.zoom(settings.getFloat(PREF_ZOOM, DEFAULT_ZOOM_LEVEL));
-            camera.target(new LatLng(settings.getFloat(PREF_LAT, DEFAULT_LATITUDE),
-                    settings.getFloat(PREF_LNG, DEFAULT_LONGITUDE)));
-
-            googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(camera.build()));
-        }
-    };
-
-    private final OnMapReadyCallback setupMapTask = new OnMapReadyCallback() {
-        @Override
-        public void onMapReady(GoogleMap googleMap) {
-            setupMapUI(googleMap);
-            setupMapOverlay(googleMap);
-            setupMapListeners(googleMap);
-        }
-    }; */
 
     private LocalBroadcastManager lbm;
 
@@ -458,7 +332,7 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
 //设置定位模式为高精度模式，Battery_Saving为低功耗模式，Device_Sensors是仅设备模式
         mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
 //设置定位间隔,单位毫秒,默认为2000ms
-        mLocationOption.setInterval(2000);
+        mLocationOption.setInterval(USER_LOCATION_UPDATE_FASTEST_INTERVAL);
 //设置定位参数
         mLocationClient.setLocationOption(mLocationOption);
 // 此方法为每隔固定时间会发起一次定位请求，为了减少电量消耗或网络流量消耗，
@@ -535,7 +409,7 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
 
     @Override
     public DPMapProvider getProvider() {
-        return DPMapProvider.GOOGLE_MAP;
+        return DPMapProvider.AMAP;
     }
 
     @Override
@@ -596,10 +470,9 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
         final MarkerOptions markerOptions = new MarkerOptions()
                 .position(position)
                 .draggable(isDraggable)
-//                .alpha(markerInfo.getAlpha())
                 .anchor(markerInfo.getAnchorU(), markerInfo.getAnchorV())
-//                .infoWindowAnchor(markerInfo.getInfoWindowAnchorU(),
-//                        markerInfo.getInfoWindowAnchorV()).rotation(markerInfo.getRotation())
+                .setInfoWindowOffset((int)markerInfo.getInfoWindowAnchorU(),
+                        (int)markerInfo.getInfoWindowAnchorV())
                 .snippet(markerInfo.getSnippet()).title(markerInfo.getTitle())
                 .setFlat(markerInfo.isFlat()).visible(markerInfo.isVisible());
 
@@ -1022,10 +895,9 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
         map.setMyLocationEnabled(false);
         UiSettings mUiSettings = map.getUiSettings();
         mUiSettings.setMyLocationButtonEnabled(false);
-//        mUiSettings.setMapToolbarEnabled(false);
-        mUiSettings.setCompassEnabled(false);
-        mUiSettings.setTiltGesturesEnabled(false);
-        mUiSettings.setZoomControlsEnabled(false);
+        mUiSettings.setCompassEnabled(true);
+        mUiSettings.setTiltGesturesEnabled(true);
+        mUiSettings.setZoomControlsEnabled(true);
         mUiSettings.setRotateGesturesEnabled(mAppPrefs.isMapRotationEnabled());
     }
 
@@ -1070,124 +942,11 @@ public class AMapFragment extends SupportMapFragment implements DPMap {
         tileProviderManager = null;
         map.setMapType(AMapPrefFragment.PrefManager.getMapType(context));
     }
-/*
-    private void setupArcGISTileProvider(Context context, AMap map){
-        Timber.i("Enabling ArcGIS tile provider.");
-
-        //Remove the default google map layer
-        map.setMapType(AMap.MAP_TYPE_NORMAL);
-
-        final GoogleMapPrefFragment.PrefManager prefManager = GoogleMapPrefFragment.PrefManager;
-        String selectedMap = prefManager.getArcGISMapType(context);
-
-        if(!(tileProviderManager instanceof ArcGISTileProviderManager)
-            || !selectedMap.equals(((ArcGISTileProviderManager) tileProviderManager).getSelectedMap())){
-
-            //Setup the online tile overlay
-            if(onlineTileOverlay != null){
-//                onlineTileOverlay.remove();
-                onlineTileOverlay = null;
-            }
-
-            tileProviderManager = new ArcGISTileProviderManager(context, selectedMap);
-            TileOverlayOptions options = new TileOverlayOptions()
-                .tileProvider(tileProviderManager.getOnlineTileProvider())
-                .zIndex(ONLINE_TILE_PROVIDER_Z_INDEX);
-
-            onlineTileOverlay = map.addTileOverlay(options);
-
-            //Setup the offline tile overlay
-            if(offlineTileOverlay != null){
-                offlineTileOverlay.remove();
-                offlineTileOverlay = null;
-            }
-
-            if(prefManager.isOfflineMapLayerEnabled(context)){
-                options = new TileOverlayOptions()
-                    .tileProvider(tileProviderManager.getOfflineTileProvider())
-                    .zIndex(OFFLINE_TILE_PROVIDER_Z_INDEX);
-
-                offlineTileOverlay = map.addTileOverlay(options);
-            }
-        }
-    }
-
-    private void setupMapboxTileProvider(Context context, AMap map){
-        Timber.d("Enabling mapbox tile provider.");
-
-        //Remove the default google map layer.
-        map.setMapType(AMap.MAP_TYPE_NORMAL);
-
-        final GoogleMapPrefFragment.PrefManager prefManager = GoogleMapPrefFragment.PrefManager;
-        final String mapboxId = prefManager.getMapboxId(context);
-        final String mapboxAccessToken = prefManager.getMapboxAccessToken(context);
-        final int maxZoomLevel = (int) map.getMaxZoomLevel();
-
-        if (!(tileProviderManager instanceof MapboxTileProviderManager)
-            || !mapboxId.equals(((MapboxTileProviderManager) tileProviderManager).getMapboxId())
-            || !mapboxAccessToken.equals(((MapboxTileProviderManager) tileProviderManager).getMapboxAccessToken())) {
-
-            //Setup the online tile overlay
-            if (onlineTileOverlay != null) {
-                onlineTileOverlay.remove();
-                onlineTileOverlay = null;
-            }
-
-            tileProviderManager = new MapboxTileProviderManager(context, mapboxId, mapboxAccessToken, maxZoomLevel);
-            TileOverlayOptions options = new TileOverlayOptions()
-                .tileProvider(tileProviderManager.getOnlineTileProvider())
-                .zIndex(ONLINE_TILE_PROVIDER_Z_INDEX);
-
-            onlineTileOverlay = map.addTileOverlay(options);
-
-            //Setup the offline tile overlay
-            if(offlineTileOverlay != null){
-                offlineTileOverlay.remove();
-                offlineTileOverlay = null;
-            }
-
-            if(prefManager.isOfflineMapLayerEnabled(context)){
-                options = new TileOverlayOptions()
-                    .tileProvider(tileProviderManager.getOfflineTileProvider())
-                    .zIndex(OFFLINE_TILE_PROVIDER_Z_INDEX);
-
-                offlineTileOverlay = map.addTileOverlay(options);
-            }
-        }
-
-        //Check if the mapbox credentials are valid.
-        new AsyncTask<Void, Void, Integer>(){
-
-            @Override
-            protected Integer doInBackground(Void... params) {
-                final Context context = getContext();
-                return MapboxUtils.fetchReferenceTileUrl(context, mapboxId, mapboxAccessToken);
-            }
-
-            @Override
-            protected void onPostExecute(Integer result){
-                if(result != null){
-                    switch(result){
-                        case HttpURLConnection.HTTP_UNAUTHORIZED:
-                        case HttpURLConnection.HTTP_NOT_FOUND:
-                            //Invalid mapbox credentials
-                            Toast.makeText(getContext(), R.string.alert_invalid_mapbox_credentials, Toast.LENGTH_LONG).show();
-                            break;
-                    }
-                }
-            }
-        }.execute();
-    }
 
     protected void clearMap() {
-        getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(GoogleMap googleMap) {
-                googleMap.clear();
-                setupMapOverlay(googleMap);
-            }
-        });
-    } */
+        mMap.clear();
+        setupMapOverlay(mMap);
+    }
 
     private LatLngBounds getBounds(List<LatLng> pointsList) {
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
