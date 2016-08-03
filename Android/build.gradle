@@ -49,7 +49,7 @@ dependencies {
     compile 'com.github.lecho:hellocharts-library:1.5.5@aar'
 }
 
-def versionPrefix = "Tower-v"
+def versionPrefix = "cTower-v"
 
 //Decomposed version name and code (https://plus.google.com/+JakeWharton/posts/6f5TcVPRZij)
 def versionMajor = 3
@@ -155,19 +155,19 @@ android {
         }
     }
 
-    /*
+
     android.applicationVariants.all { variant ->
         variant.outputs.each { output ->
             def file = output.outputFile
             if (file != null && file.name.endsWith('.apk')) {
                 def buildType = variant.buildType.getName()
                 def flavorName = variant.getFlavorName()
-                def versionCode = defaultConfig.versionCode
-                output.outputFile = new File(file.parent, "tower-${flavorName}-${buildType}.${versionCode}.apk")
+                def versionName = defaultConfig.versionName
+                output.outputFile = new File(file.parent, "${versionName}-${buildType}.apk")
             }
         }
     }
-
+/*
     android.variantFilter { variant ->
         def flavors = variant.getFlavors()
         if (!flavors.isEmpty()) {

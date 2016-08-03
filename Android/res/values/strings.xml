@@ -599,4 +599,7 @@
     <string name="pref_title_tile_provider_preferences">Tile Provider Preferences</string>
     <string name="pref_advanced_settings_title">Advanced Settings</string>
     <string name="label_fpv">FPV</string>
+
+    <string name="changelog_title">Changelog Dialog</string>
+
 </resources>

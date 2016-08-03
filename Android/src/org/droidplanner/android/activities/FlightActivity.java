@@ -107,7 +107,7 @@ public class FlightActivity extends DrawerNavigationUI implements SlidingUpPanel
         //Show the changelog if this is the first time the app is launched since update/install
         if(Utils.getAppVersionCode(context) > mAppPrefs.getSavedAppVersionCode()) {
             DialogMaterialFragment changelog = new DialogMaterialFragment();
-            changelog.show(getSupportFragmentManager(), "Changelog Dialog");
+            changelog.show(getSupportFragmentManager(), getString(R.string.changelog_title));
 
             mAppPrefs.updateSavedAppVersionCode(context);
         }
