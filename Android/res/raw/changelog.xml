@@ -9,21 +9,17 @@
         in your View component in layout file -->
 
 
-    <changelogversion versionName="3.2.1" changeDate="May 12,2016">
-        <changelogimprovement>[b]UVC[/b] devices support by [i]Guilherme Blanco[/i]</changelogimprovement>
-        <changelogimprovement>Google Cardboard [b]FPV[/b] support thanks to [b]DronePro[/b] by [i]Shawn Fraser[/i]</changelogimprovement>
+    <changelogversion versionName="3.2.2" changeDate="Aug 3,2016">
+        <changelogimprovement>cTower地面站，支持去掉谷歌gms服务的国产手机 by [i]offbye[/i]</changelogimprovement>
+        <changelogimprovement>去掉3DR服务检查 by [i]offbye[/i]</changelogimprovement>
+        <changelogimprovement>增加高德地图支持，并设为默认地图，可以设置切换谷歌地图</changelogimprovement>
         <changelogimprovement>Add ability to set a custom video stream. Check the [i][b]Tower Wiki[/b][/i] for setup instructions</changelogimprovement>
         <changelogimprovement>Add [i]Reset ROI[/i] mission item</changelogimprovement>
         <changelogimprovement>Add support for [b]ArcGIS[/b] map tiles</changelogimprovement>
 
-        <changelogtext>Update UX for the telemetry connection preferences</changelogtext>
-        <changelogtext>Remove support for [b]Droneshare[/b] accounts as the site is closing down</changelogtext>
-
-        <changelogtext>Navigation Drawer update to Material Design by [i]jandrop[/i]</changelogtext>
-        <changelogtext>Improve spanish translation</changelogtext>
-        <changelogtext>Improve german translation</changelogtext>
-        <changelogtext>Improve chinese translation</changelogtext>
-        <changelogtext>Improve portuguese translation</changelogtext>
+        <changelogtext>修改了应用ID，避免和原版Tower冲突</changelogtext>
+        <changelogtext>修改gradle配置，适配高德地图</changelogtext>
+        <changelogtext>增强简体中文翻译</changelogtext>
 
     </changelogversion>
 
