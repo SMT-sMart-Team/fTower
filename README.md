@@ -2,18 +2,27 @@
 [![Issue Stats](http://issuestats.com/github/DroidPlanner/Tower/badge/pr)](http://issuestats.com/github/DroidPlanner/Tower)
 [![Issue Stats](http://issuestats.com/github/DroidPlanner/Tower/badge/issue)](http://issuestats.com/github/DroidPlanner/Tower)
 
-# Tower
+# cTower: Tower for Chinese cellphones.
 
 [![Join the chat at https://gitter.im/DroidPlanner/Tower](https://badges.gitter.im/DroidPlanner/Tower.svg)](https://gitter.im/DroidPlanner/Tower?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Tower is a Ground Control Station (GCS) Android app built atop [3DR Services](https://github.com/dronekit/dronekit-android), for UAVs
 running Ardupilot software.
 
-# Tower中国版本
-官方的代码在国内不适用，国内多数手机没有谷歌服务，没有3DR services等，因此为了我自己玩的开心，Fork这个项目改一下，逐步改的让国内主流安卓手机能用，希望后面能造福魔友。
+# Tower中国用户适配版本--cTower手机地面站 by offbye
 
-    1. 修改gradle，解决GFW导致一些repo下载慢无法编译的问题
-    2. 修改谷歌地图key，debug版本可用
+> 3DR官方Tower手机地面站在国内不适用，国内多数手机没有谷歌服务和谷歌市场，因此没法安装3DR services服务，谷歌地图在国内由于众所周知的原因，也不好用。
+因此我为了自己玩的开心，Fork Tower项目改一下，逐步改的让国内主流安卓手机能用，希望后面能造福魔友。
+cTower在尽量保留Tower原版最新功能的基础上，针对国内手机进行适配和增强，版本号和Tower保持同步
+
+## 3.2.2 更新说明
+
+ 1. cTower地面站，实现支持去掉谷歌gms服务的国产手机
+ 2. 去掉3DR服务检查 by [i]offbye[/i] 
+ 3. 增加高德地图支持，并设为默认地图，可以设置切换谷歌地图
+ 4. 修改了应用ID，避免和原版Tower冲突
+ 5. 修改gradle配置，适配高德地图，解决GFW导致一些repo下载慢无法编译的问题
+ 6. 增强简体中文翻译
 
 [![Google Play Store](https://developer.android.com/images/brand/en_app_rgb_wo_45.png)](https://play.google.com/store/apps/details?id=org.droidplanner.android)
 

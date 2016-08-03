@@ -16,7 +16,7 @@
     <string name="screen_cal">校准</string>
     <string name="screen_checklist">检查清单</string>
     <string name="screen_parameters">参数</string>
-    
+
     <!-- App Settings/Preferences -->
     <string name="pref_connection_type">遥测连接方式</string>
     <string name="pref_connection_type_summary">选择以何种方式连接无人机</string>
@@ -51,7 +51,7 @@
     <string name="pref_server_port">服务器端口</string>
     <string name="pref_server_udp">UDP连接</string>
     <string name="pref_udp_server_port">UDP服务器端口</string>
-    <string name="about">关于（本地化：APM中文网 四季天书）</string>
+    <string name="about">关于（cTower by offbye 本地化：APM中文网 四季天书）</string>
     <string name="version">版本</string>
     <!-- Toast Message -->
     <string name="user_autopan_long_press">长按图示可以启动地图中使用者位置置中</string>
@@ -104,7 +104,7 @@
     <string name="mode_stabilize">Stabilize自稳模式让模型水平飞行。</string>
     <string name="mode_poshold">PosHold定点模式可以让位置保持（GPS）与直接摇杆控制并用。</string>
     <string name="mode_follow">载具将基于设备的GPS位置跟随用户。</string>
-    
+
     <!-- Waypoint types -->
     <string name="waypointType_Waypoint">航点</string>
     <string name="waypointType_SplineWaypoint">曲线航点</string>
@@ -212,7 +212,7 @@
     <string name="setup_imu_step">要开始校准，请点击校准。</string>
     <string name="setup_imu_timeleft">下一个方向前的剩余时间：</string>
 
-    
+
     <!-- Flight Setup Resource Strings -->
     <string name="setup_fm_title">飞行模式配置</string>
     <string name="setup_fm_side_title">更新飞行模式</string>
