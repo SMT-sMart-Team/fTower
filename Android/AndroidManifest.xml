@@ -162,6 +162,10 @@
             android:launchMode="singleTask"
             android:noHistory="true"
             android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar.MinWidth" />
+
+        <!-- 高德定位需要的服务 -->
+        <service android:name="com.amap.api.location.APSService" >
+        </service>
     </application>
 
 </manifest>
