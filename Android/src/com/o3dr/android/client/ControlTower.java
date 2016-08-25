@@ -34,15 +34,18 @@ public class ControlTower {
         }
     };
 
-/*    private final ServiceConnection o3drServicesConnection = new ServiceConnection() {
+    private final ServiceConnection o3drServicesConnection = new ServiceConnection() {
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             isServiceConnecting.set(false);
 
-            o3drServices = IDroidPlannerServices.Stub.asInterface(service);
             try {
-                o3drServices.asBinder().linkToDeath(binderDeathRecipient, 0);
+                if (is3DRServicesInstalled()){
+                    o3drServices = IDroidPlannerServices.Stub.asInterface(service);
+                    o3drServices.asBinder().linkToDeath(binderDeathRecipient, 0);
+                }
+
                 notifyTowerConnected();
             } catch (RemoteException e) {
                 notifyTowerDisconnected();
@@ -54,7 +57,7 @@ public class ControlTower {
             isServiceConnecting.set(false);
             notifyTowerDisconnected();
         }
-    }; */
+    };
 
     private final AtomicBoolean isServiceConnecting = new AtomicBoolean(false);
 
@@ -71,8 +74,8 @@ public class ControlTower {
     }
 
     public boolean isTowerConnected() {
-//        return o3drServices != null && o3drServices.asBinder().pingBinder();
-        return true;
+        return o3drServices != null && o3drServices.asBinder().pingBinder() && is3DRServicesInstalled();
+        //return true;
     }
 
     void notifyTowerConnected() {
@@ -125,7 +128,7 @@ public class ControlTower {
     }
 
     public void connect(TowerListener listener) {
-/*        if (towerListener != null && (isServiceConnecting.get() || isTowerConnected()))
+        if (towerListener != null && (isServiceConnecting.get() || isTowerConnected()))
             return;
 
         if (listener == null) {
@@ -151,7 +154,7 @@ public class ControlTower {
                     ApiAvailability.getInstance().showErrorDialog(context, apiAvailableResult);
                     break;
             }
-        } */
+        }
     }
 
     public void disconnect() {
@@ -164,14 +167,29 @@ public class ControlTower {
 
         towerListener = null;
 
-//        try {
-//            context.unbindService(o3drServicesConnection);
-//        } catch (Exception e) {
-//            Log.e(TAG, "Error occurred while unbinding from 3DR Services.");
-//        }
+        if (!is3DRServicesInstalled()){
+            return;
+        }
+
+        try {
+            context.unbindService(o3drServicesConnection);
+        } catch (Exception e) {
+            Log.e(TAG, "Error occurred while unbinding from 3DR Services.");
+        }
     }
 
     String getApplicationId() {
         return context.getPackageName();
+    }
+
+    private boolean is3DRServicesInstalled() {
+        final ResolveInfo info = context.getPackageManager().resolveService(serviceIntent, 0);
+        if (info == null){
+            Log.e(TAG, "is3DRServicesInstalled false");
+            return false;
+        }
+
+        //this.serviceIntent.setClassName(info.serviceInfo.packageName, info.serviceInfo.name);
+        return true;
     }
 }
