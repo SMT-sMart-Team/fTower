@@ -7,7 +7,12 @@
         If you want to use a custom file you can specify
         chg:changeLogFileResourceId="@raw/custom_changelog"
         in your View component in layout file -->
-
+    <changelogversion versionName="3.2.3" changeDate="Sep 19,2016">
+        <changelogtext>3.2.3 2016-09-19更新说明</changelogtext>
+        <changelogtext>1. fix Amap crash in Nexus 6;</changelogtext>
+        <changelogtext>2. update Amap to 2.9.0_20160906，升级高德地图SDK到最新版本</changelogtext>
+        <changelogtext>3. 优化3DR服务判断，如果存在则连接3DR服务</changelogtext>
+    </changelogversion>
 
     <changelogversion versionName="3.2.2" changeDate="Aug 3,2016">
         <changelogimprovement>cTower地面站，支持去掉谷歌gms服务的国产手机 by [i]offbye[/i]</changelogimprovement>

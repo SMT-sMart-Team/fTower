@@ -53,8 +53,8 @@ def versionPrefix = "cTower-v"
 //Decomposed version name and code (https://plus.google.com/+JakeWharton/posts/6f5TcVPRZij)
 def versionMajor = 3
 def versionMinor = 2
-def versionPatch = 2
-def versionBuild = 8 //bump for dogfood builds, public betas, etc.
+def versionPatch = 3
+def versionBuild = 9 //bump for dogfood builds, public betas, etc.
 
 //Logging levels
 def logLevelVerbose = 2;
@@ -142,7 +142,7 @@ android {
             signingConfig signingConfigs.release
             //proguardFiles 'proguard-rules.pro'
             ext.enableCrashlytics = false
-            resValue "string", "app_title", "cnTower"
+            resValue "string", "app_title", "cTower"
         }
 
         debug {
@@ -150,7 +150,7 @@ android {
             zipAlignEnabled false
             shrinkResources false
             ext.enableCrashlytics = false
-            resValue "string", "app_title", "cnTower Debug"
+            resValue "string", "app_title", "cTower Debug"
         }
     }
 

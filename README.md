@@ -12,6 +12,11 @@ running Ardupilot software.
 
 > cTower在尽量保留Tower原版最新功能不变的基础上，针对国内手机用户进行适配和增强，版本号和Tower保持同步。
 
+## 3.2.3 2016-09-19更新说明
+ 1. fix Amap crash in Nexus 6; 
+ 2. update Amap to 2.9.0_20160906，升级高德地图SDK到最新版本
+ 3. 优化3DR服务判断，如果存在则连接3DR服务
+
 ## 3.2.2 更新说明
 
  1. cTower地面站，实现支持去掉谷歌gms服务的国产手机
